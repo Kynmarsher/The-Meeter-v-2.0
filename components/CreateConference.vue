@@ -108,12 +108,6 @@ const filteredFrameworks = computed(() => frameworks.filter(i => !modelValue.val
                                 Создать конференцию
                             </Button>
                         </div>
-                        <div class="mt-4 text-center text-sm">
-                            У вас нет учетной записи?
-                            <NuxtLink to="/Registration" class="underline">
-                                Зарегистрироваться
-                            </NuxtLink>
-                        </div>
                     </div>
                 </div>
             </div>

@@ -75,8 +75,8 @@ onMounted(() => {
 
 
 <template>
-    <div>
-        <h1>Home page</h1>
-        <NuxtLink to="/CurrentConferences">About page</NuxtLink>
+    <div class="fixed flex flex-col h-full w-full">
+        <img src="/public/Flag.jpg" alt="Image" class="h-full object-cover">
+        </img>
     </div>
 </template>
