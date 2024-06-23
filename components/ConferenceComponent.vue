@@ -26,17 +26,31 @@ const props = defineProps<{
 }>()
 
 function createRoom(id) {
-		// CreateRoomRequestPacket(String name)
-		socket.emit('createRoom', {roomId: id}, (response) => {
-			// CreateRoomResponsePacket(String roomId)
-			var data = JSON.parse(response);
-			console.log(window.location.href + data.roomId);
-      location.href = './VideoConference-' + data.roomId
-		});
-	}
-  function joinRoom(id){
-    location.href = './VideoConference-' + id
-  }
+  // CreateRoomRequestPacket(String name)
+  socket.emit('createRoom', { roomId: id }, (response) => {
+    // CreateRoomResponsePacket(String roomId)
+    var data = JSON.parse(response);
+    console.log(window.location.href + data.roomId);
+    location.href = './VideoConference-' + data.roomId
+  });
+}
+
+const client = new Client()
+  .setEndpoint('https://cloud.appwrite.io/v1') // Your API Endpoint
+  .setProject('5df5acd0d48c2'); // Your project ID
+
+const databases = new Databases(client);
+
+const result = databases.updateDocument(
+    '666459840018cf31333a', // databaseId
+    '6664599a003c2329af67', // collectionId
+    props.item.$id, // documentId
+    {"ActiveCall": true} // data (optional)
+);
+
+function joinRoom(id) {
+  location.href = './VideoConference-' + id
+}
 </script>
 
 <template>
@@ -52,14 +66,15 @@ function createRoom(id) {
         </div>
         <div v-if="item.ActiveCall === false && item.Author == accountInformation.$id" class="flex gap-x-4 p-1">
           <Button @click="createRoom(item.$id)"
-          class="px-4 py-2 bg-background text-foreground text-md font-semibold hover:text-background hover:bg-outcome-message">Начать
+            class="px-4 py-2 bg-background text-foreground text-md font-semibold hover:text-background hover:bg-outcome-message">Начать
             видеозвонок</Button>
           <Button
             class="w-10 h-10 bg-background text-foreground text-md rounded-full font-semibold hover:text-background hover:bg-outcome-message">...</Button>
         </div>
         <div v-else-if="item.ActiveCall === true && item.Author == accountInformation.$id" class="flex gap-x-4 p-1">
           <Button @click="joinRoom(item.$id)"
-            class="px-4 py-2 bg-background text-foreground text-md font-semibold hover:text-background hover:bg-outcome-message">Присоединиться к
+            class="px-4 py-2 bg-background text-foreground text-md font-semibold hover:text-background hover:bg-outcome-message">Присоединиться
+            к
             звонку</Button>
           <Button
             class="w-10 h-10 bg-background text-foreground text-md rounded-full font-semibold hover:text-background hover:bg-outcome-message">...</Button>
@@ -70,16 +85,17 @@ function createRoom(id) {
         </div>
         <div v-else-if="item.ActiveCall === true && item.Author != accountInformation.$id" class="flex gap-x-4 p-1">
           <Button @click="joinRoom(item.$id)"
-            class="px-4 py-2 bg-background text-foreground text-md font-semibold hover:text-background hover:bg-outcome-message">Присоединиться к
+            class="px-4 py-2 bg-background text-foreground text-md font-semibold hover:text-background hover:bg-outcome-message">Присоединиться
+            к
             звонку</Button>
           <Button
             class="w-10 h-10 bg-background text-foreground text-md rounded-full font-semibold hover:text-background hover:bg-outcome-message">...</Button>
         </div>
       </CardHeader>
-        <ScrollArea>
-          <ChatMessage v-if="chatMessages" v-for="(item, index) in chatMessages" :item="item" :index="index"
-            :key="item.$id" :accountInformation="accountInformation"></ChatMessage>
-        </ScrollArea>
+      <ScrollArea>
+        <ChatMessage v-if="chatMessages" v-for="(item, index) in chatMessages" :item="item" :index="index"
+          :key="item.$id" :accountInformation="accountInformation"></ChatMessage>
+      </ScrollArea>
       <CardFooter class="flex border-t border-border p-4 gap-4 bg-foreground">
         <textarea class="rounded-lg w-full bg-background border border-border px-3 py-2"></textarea>
         <Button class="w-11 h-11 bg-background rounded-full border border-input hover:bg-outcome-message"></Button>

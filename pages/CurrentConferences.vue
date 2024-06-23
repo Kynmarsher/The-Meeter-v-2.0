@@ -33,6 +33,7 @@ let sessionInformation = ref(undefined);
 let conferenceList = ref(undefined)
 let chatMessages = ref(undefined)
 let createConferenceProp = ref(false)
+let frameworks = ref([])
 
 const searchValue = ref('')
 const debouncedSearch = refDebounced(searchValue, 250)
@@ -179,6 +180,15 @@ onMounted(() => {
     );
   }
 })
+
+function getListUsers(){
+    socket.emit("memberList")
+}
+
+socket.on('memberList', (arg) =>{
+console.log(JSON.parse(arg.toString()))
+frameworks.value = JSON.parse(arg.toString())  
+})
 </script>
 
 <template>
@@ -205,7 +215,7 @@ onMounted(() => {
         <div class="flex w-full justify-between">
           <Button
             class="md:w-[100px] lg:w-[300px] rounded-md border border-green-button bg-green-button hover:bg-foreground text-lg text-background font-semibold"
-            @click="toogleCreateConferenceModal">
+            @click="getListUsers(); toogleCreateConferenceModal()">
             + Создать новую конференцию</Button>
         </div>
       </div>
@@ -259,6 +269,7 @@ onMounted(() => {
       </Tabs>
     </div>
   </div>
-  <CreateConference v-if="createConferenceProp" class="absolute flex w-full h-full bg-transparent/50">
+  <CreateConference 
+  v-if="createConferenceProp" :accountInformation="accountInformation" :frameworks="frameworks" class="absolute flex w-full h-full bg-transparent/50">
   </CreateConference>
 </template>
