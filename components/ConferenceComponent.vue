@@ -35,18 +35,18 @@ function createRoom(id) {
   });
 
   const client = new Client()
-  .setEndpoint('https://cloud.appwrite.io/v1') // Your API Endpoint
-  .setProject('6655c51b002ccc6d11bf'); // Your project ID
+    .setEndpoint('https://cloud.appwrite.io/v1') // Your API Endpoint
+    .setProject('6655c51b002ccc6d11bf'); // Your project ID
 
-const databases = new Databases(client);
+  const databases = new Databases(client);
 
-const result = databases.updateDocument(
+  const result = databases.updateDocument(
     '666459840018cf31333a', // databaseId
     '6664599a003c2329af67', // collectionId
     props.item.$id, // documentId
-    {"ActiveCall": true} // data (optional)
-)
-location.href = './VideoConference-' + id;
+    { "ActiveCall": true } // data (optional)
+  )
+  location.href = './VideoConference-' + id;
 }
 
 
