@@ -46,7 +46,8 @@ const result = databases.updateDocument(
     '6664599a003c2329af67', // collectionId
     props.item.$id, // documentId
     {"ActiveCall": true} // data (optional)
-);
+)
+location.href = './VideoConference-' + id;
 
 function joinRoom(id) {
   location.href = './VideoConference-' + id
