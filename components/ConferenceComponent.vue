@@ -34,6 +34,9 @@ function createRoom(id) {
       location.href = './VideoConference-' + data.roomId
 		});
 	}
+  function joinRoom(id){
+    location.href = './VideoConference-' + id
+  }
 </script>
 
 <template>
@@ -55,7 +58,7 @@ function createRoom(id) {
             class="w-10 h-10 bg-background text-foreground text-md rounded-full font-semibold hover:text-background hover:bg-outcome-message">...</Button>
         </div>
         <div v-else-if="item.ActiveCall === true && item.Author == accountInformation.$id" class="flex gap-x-4 p-1">
-          <Button
+          <Button @click="joinRoom(item.$id)"
             class="px-4 py-2 bg-background text-foreground text-md font-semibold hover:text-background hover:bg-outcome-message">Присоединиться к
             звонку</Button>
           <Button
@@ -66,7 +69,7 @@ function createRoom(id) {
             class="w-10 h-10 bg-background text-foreground text-md rounded-full font-semibold hover:text-background hover:bg-outcome-message">...</Button>
         </div>
         <div v-else-if="item.ActiveCall === true && item.Author != accountInformation.$id" class="flex gap-x-4 p-1">
-          <Button
+          <Button @click="joinRoom(item.$id)"
             class="px-4 py-2 bg-background text-foreground text-md font-semibold hover:text-background hover:bg-outcome-message">Присоединиться к
             звонку</Button>
           <Button
