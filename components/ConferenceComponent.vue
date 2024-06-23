@@ -33,9 +33,8 @@ function createRoom(id) {
     console.log(window.location.href + data.roomId);
     location.href = './VideoConference-' + data.roomId
   });
-}
 
-const client = new Client()
+  const client = new Client()
   .setEndpoint('https://cloud.appwrite.io/v1') // Your API Endpoint
   .setProject('6655c51b002ccc6d11bf'); // Your project ID
 
@@ -48,6 +47,8 @@ const result = databases.updateDocument(
     {"ActiveCall": true} // data (optional)
 )
 location.href = './VideoConference-' + id;
+}
+
 
 function joinRoom(id) {
   location.href = './VideoConference-' + id
