@@ -44,10 +44,8 @@ function exitAcc() {
       console.log("Сессия успешна удалена");
       console.log(response); // Success
       setTimeout(() => {
-        return navigateTo({
-            path: '/'
-        });
-      }, 1500);
+        window.location.href='/'
+      }, 1000);
     },
     function (error) {
       console.log("Ошибка при удалении сессии");

@@ -90,8 +90,8 @@ let lname: string;
                             </div>
                             <Input id="password" type="password" required v-model="password" />
                         </div>
-                        <Button type="submit" class="w-full" @click="createAcc()">
-                            Войти
+                        <Button type="submit" class="w-full bg-foreground text-background hover:bg-outcome-message" @click="createAcc()">
+                            Зарегистрироваться
                         </Button>
                     </div>
                     <div class="mt-4 text-center text-sm">

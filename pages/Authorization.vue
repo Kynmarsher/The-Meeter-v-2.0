@@ -67,7 +67,7 @@ let name: string;
               </div>
               <Input id="password" type="password" v-model="password" required />
             </div>
-            <Button type="submit" class="w-full" @click="enterAcc()">
+            <Button type="submit" class="w-full bg-foreground text-background hover:bg-outcome-message" @click="enterAcc()">
               Войти
             </Button>
           </div>

@@ -7,7 +7,9 @@ import ConferenceList from '../components/ConferenceList.vue'
 import CreateConference from '../components/CreateConference.vue'
 import Search from '../components/Search.vue'
 import UserNav from '../components/UserNav.vue'
+import MembersList from '../components/MembersList.vue'
 import { Button } from '../components/ui/button'
+import { socket } from "../components/socket"
 
 import {
   Card,
@@ -25,7 +27,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar"
 import { onMounted } from 'vue'
 
-/* const Conferences[]; */
 let cookie = ref(undefined);
 let accountInformation = ref(undefined);
 let sessionInformation = ref(undefined);
@@ -36,7 +37,36 @@ let createConferenceProp = ref(false)
 const searchValue = ref('')
 const debouncedSearch = refDebounced(searchValue, 250)
 
-function toogleCreateConferenceModal(){
+const isConnected = ref(false);
+const transport = ref("N/A");
+
+if (socket.connected) {
+  onConnect();
+}
+
+function onConnect() {
+  isConnected.value = true;
+  transport.value = socket.io.engine.transport.name;
+
+  socket.io.engine.on("upgrade", (rawTransport) => {
+    transport.value = rawTransport.name;
+  });
+}
+
+function onDisconnect() {
+  isConnected.value = false;
+  transport.value = "N/A";
+}
+
+socket.on("connect", onConnect);
+socket.on("disconnect", onDisconnect);
+
+onBeforeUnmount(() => {
+  socket.off("connect", onConnect);
+  socket.off("disconnect", onDisconnect);
+});
+
+function toogleCreateConferenceModal() {
   createConferenceProp.value = !createConferenceProp.value
 }
 
@@ -50,7 +80,7 @@ const filteredConferencesList = computed(() => {
   else {
     output = conferenceList.value.filter((item) => {
       return item.Name.includes(debouncedSearch.value)
-      || item.Description.includes(debouncedSearch.value)
+        || item.Description.includes(debouncedSearch.value)
     })
   }
   return output
@@ -124,6 +154,14 @@ onMounted(() => {
               conferenceList.value = response.documents
               console.log("Список конференций:")
               console.log(conferenceList.value)
+
+              var checkExist = setInterval(function () {
+                if (filteredConferencesList.value[0].$id !== undefined) {
+                  console.log("Exists!");
+                  clearInterval(checkExist)
+                  getChatMessages(filteredConferencesList.value[0].$id)
+                }
+              }, 1000)
             })
           },
           function (error) {
@@ -144,6 +182,7 @@ onMounted(() => {
 </script>
 
 <template>
+  <title>Текущие конференции</title>
   <div class="fixed flex flex-col md:flex h-full w-full">
     <div class="border-b">
       <div class="flex h-[5rem] items-center px-4">
@@ -160,34 +199,66 @@ onMounted(() => {
           Текущие конференции
         </h2>
         <div class="mr-auto items-center space-x-4">
-          <Input v-model="searchValue" placeholder="Найти конференцию..." type="search" class="md:w-[100px] lg:w-[300px]"/>
+          <Input v-model="searchValue" placeholder="Найти конференцию..." type="search"
+            class="md:w-[100px] lg:w-[300px]" />
         </div>
         <div class="flex w-full justify-between">
-          <DateRangePicker />
           <Button
-            class="md:w-[100px] lg:w-[300px] rounded-md border border-green-button bg-green-button text-lg font-semibold" @click="toogleCreateConferenceModal">
+            class="md:w-[100px] lg:w-[300px] rounded-md border border-green-button bg-green-button hover:bg-foreground text-lg text-background font-semibold"
+            @click="toogleCreateConferenceModal">
             + Создать новую конференцию</Button>
         </div>
       </div>
-      <Tabs v-if="conferenceList" :default-value="0" class="flex flex-row gap-4 w-full h-full pb-16">
-        <Card class="w-4/12">
-          <CardHeader>
-            <CardTitle>Конференции</CardTitle>
+      <Tabs v-if="conferenceList" :default-value="0" class="flex flex-row w-full h-full pb-16 gap-4">
+        <Card class="w-[20%] h-full rounded-lg">
+          <CardHeader class="bg-foreground">
+            <CardTitle class="text-background">Конференции</CardTitle>
           </CardHeader>
           <CardContent>
             <scroll-area id="scroller">
               <TabsList class="h-full w-full space-y-2 flex-col">
-                <ConferenceList :items="filteredConferencesList" v-for="(item, index) in filteredConferencesList" :item="item" :index="index" :key="item.$id" @add-task="addtask"
-                  @click="getChatMessages(item.$id)" @focus="getChatMessages(item.$id)" @active="getChatMessages(item.$id)"/>
+                <ConferenceList v-if="filteredConferencesList" :items="filteredConferencesList"
+                  v-for="(item, index) in filteredConferencesList" :item="item" :index="index" :key="item.$id"
+                  @click="getChatMessages(item.$id)" />
               </TabsList>
             </scroll-area>
           </CardContent>
         </Card>
-        <ConferenceComponent v-if="conferenceList && accountInformation" v-for="(item, index) in conferenceList"
-          :item="item" :index="index" :key="item.$id" :accountInformation="accountInformation"
-          :chatMessages="chatMessages" />
+        <div class="relative flex w-[60%] h-full">
+          <ConferenceComponent class="absolute w-full h-full z-20"
+            v-if="conferenceList && accountInformation"
+            v-for="(item, index) in conferenceList" :item="item" :index="index" :key="item.$id"
+            :accountInformation="accountInformation" :chatMessages="chatMessages" />
+          <Card v-if="filteredConferencesList.value === undefined" v-bind="filteredConferencesList.value"
+            class="flex flex-col justify-between w-full h-full rounded-lg z-10">
+            <CardHeader class="flex flex-row justify-between p-3 rounded-none h-[10%] bg-foreground">
+            </CardHeader>
+            <ScrollArea>
+              <div class="flex w-full h-full justify-center items-center">
+                <img src="/public/logo.png" class="w-[40%] h-[40%] object-contain">
+              </div>
+            </ScrollArea>
+            <CardFooter class="flex border-t border-border p-4 gap-4 h-[10%] bg-foreground">
+            </CardFooter>
+          </Card>
+        </div>
+        <Card class="w-[20%] h-full rounded-lg">
+          <CardHeader class="bg-foreground">
+            <CardTitle class="text-background">Участники</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <scroll-area id="scroller">
+              <div class="h-full w-full space-y-2 flex-col">
+                <MembersList v-if="conferenceList && accountInformation" v-for="(item, index) in conferenceList.Members"
+                  :item="item" :index="index" :key="item.$id" :accountInformation="accountInformation"
+                  :author="conferenceList.Author"></MembersList>
+              </div>
+            </scroll-area>
+          </CardContent>
+        </Card>
       </Tabs>
     </div>
   </div>
-  <CreateConference v-if="createConferenceProp" class="absolute flex w-full h-full bg-transparent/50"></CreateConference>
+  <CreateConference v-if="createConferenceProp" class="absolute flex w-full h-full bg-transparent/50">
+  </CreateConference>
 </template>

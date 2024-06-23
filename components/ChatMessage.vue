@@ -25,7 +25,6 @@ const props = defineProps<{
 
 <template>
     <CardContent v-if="item.Author == accountInformation.$id" class="flex flex-col bg-background h-full justify-end">
-        <div class="w-full text-primary text-md font-medium text-center my-4">Сегодня</div>
         <div class="flex min-w-[400px] max-w-[600px] bg-income-message self-end gap-x-2 p-2 rounded-l-lg border border-border">
             <avatar class="h-12 w-12 bg-foreground">
                 <AvatarImage src="/avatars/01.png" alt="@shadcn" />
@@ -40,12 +39,11 @@ const props = defineProps<{
                             hour: '2-digit',
                             minute: '2-digit'
                     }) }}</a>
-                <div class="text-md font-medium text-primary break-all"> {{ item.Text }}</div>
+                <div class="text-md font-medium text-black break-all"> {{ item.Text }}</div>
             </div>
         </div>
     </CardContent>
     <CardContent v-if="item.Author != accountInformation.$id && item.SystemMessage === false" class="flex flex-col bg-background h-full justify-end">
-        <div class="w-full text-primary text-md font-medium text-center my-4">Сегодня</div>
         <div class="flex min-w-[400px] max-w-[600px] bg-income-message self-start gap-x-2 p-2 rounded-r-lg border border-border">
             <avatar class="h-12 w-12 bg-foreground">
                 <AvatarImage src="/avatars/01.png" alt="@shadcn" />
@@ -60,12 +58,12 @@ const props = defineProps<{
                             hour: '2-digit',
                             minute: '2-digit'
                     }) }}</a>
-                <div class="text-md font-medium text-primary break-all"> {{ item.Text }}</div>
+                <div class="text-md font-medium text-black break-all"> {{ item.Text }}</div>
             </div>
         </div>
     </CardContent>
     <CardContent v-if="item.Author != accountInformation.$id && item.SystemMessage === true" class="flex flex-col bg-background h-full justify-center">
-        <div class="w-full text-primary text-md font-medium text-center my-2">Сегодня</div>
+        <div class="w-full text-black text-md font-medium text-center my-2">Сегодня</div>
         <div class="flex w-full bg-background self-center p-3 text-center">
             <div class="flex-col w-full">
                 <div class="text-md font-medium text-muted-foreground italic break-all"> {{ item.Text }}</div>

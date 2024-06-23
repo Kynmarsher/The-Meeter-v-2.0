@@ -4,7 +4,6 @@ import { onMounted } from 'vue'
 
 /* const Conferences[]; */
 let cookie;
-let enterAccount;
 const client = new Client();
 
 client
@@ -37,7 +36,6 @@ onMounted(() => {
             function (response) {
                 console.log("Сессия найдена:");
                 console.log(response); // Success
-                enterAccount = true;
 
                 const promise00 = account.get();
 
